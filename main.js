@@ -1,4 +1,4 @@
-import { show, hiddenAll, updateResultScreen } from './lib/ui.js';
+import { show, hiddenAll, updateResultScreen, notshow, newGame } from './lib/ui.js';
 import { isValidBestOf, checkGame, computerPlay, playAsText } from './lib/rock-paper-scissors.js';
 
 // 
@@ -24,7 +24,7 @@ let losssssser = 0;
  *   computer: 1,
  *   win: true,
  * }
- * ```
+ * 
  */
 const games = [
   {
@@ -46,6 +46,8 @@ function checkWinner(player, computer){
 //  Main game - loop 
 //
 function playRound(player) {
+  
+  currentRound++;
 
   if( currentRound == totalRounds ){
     console.log("Game Over");
@@ -75,16 +77,12 @@ function playRound(player) {
       console.log("jafntefli : ", result_win);
       winner = 'jafntefli';
     }
-    
-    currentRound++; 
-    console.log(currentRound);
-   
+          
     if(isValidBestOf(totalRounds, playerWins))
     {
       currentRound = totalRounds; 
       console.log("Best of round!!");
     }
-
 
     updateResultScreen({
       player: player.toString(),
@@ -96,15 +94,7 @@ function playRound(player) {
       computerWins: computerWins,
     });
   }
-  
 }
-
-//
-// Button : Byrja leik
-//
-document
-  .querySelector('.start button')
-  .addEventListener('click', () => show('rounds'));
 
 //
 // Button : 1 , 3,  5,  7,  9
@@ -116,6 +106,7 @@ document
     value_1.textContent = '1';
     totalRounds = 1; 
     console.log(totalRounds);
+    show('play');
 });
 
 document
@@ -125,6 +116,8 @@ document
     value_3.textContent = '3';
     totalRounds = 3; 
     console.log(totalRounds);
+    show('play');
+
 });
 
 document
@@ -134,6 +127,7 @@ document
     value_5.textContent = '5';
     totalRounds = 5; 
     console.log(totalRounds);
+    show('play');
 });
 
 document
@@ -142,6 +136,7 @@ document
     const value_7 = document.querySelector('.result__totalRounds');
     value_7.textContent = '7';
     totalRounds = 7; 
+    show('play');
 });
 
 document
@@ -151,6 +146,7 @@ document
     value_9.textContent = '9';
     totalRounds = 9; 
     console.log(totalRounds);
+    show('play');
 });
 
 //
@@ -161,7 +157,8 @@ document
   .addEventListener('click', () => {
     player_pickup = 1; 
     playRound(player_pickup); 
-
+    show('result');
+    notshow();
 });
 
 document
@@ -169,6 +166,9 @@ document
   .addEventListener('click', () => {
     player_pickup = 2; 
     playRound(player_pickup); 
+    show('result');
+    notshow();
+
 });
 
 document
@@ -176,6 +176,8 @@ document
   .addEventListener('click', () => {
     player_pickup = 3; 
     playRound(player_pickup); 
+    show('result');
+    notshow();
 });
 
 
@@ -183,14 +185,18 @@ document
 // Button : Næsta  umferð 
 //
 function newRound() {
-  console.log("dasfas");
+  if(currentRound <= totalRounds){
+    show('play');
+  }
+  else{
+    newGame();
+  }
 }
 
 //
 // Button : Næsti leikur
 //
 function finishGame(){
-  
   
   counter++;
 
@@ -237,3 +243,14 @@ document.querySelector('button.finishGame')
 
 document.querySelector('button.nextRound')
   .addEventListener('click', newRound);
+
+
+// fela allt name "byrja leik" í byrjun. 
+hiddenAll(); 
+
+//
+// Button : Byrja leik
+//
+document
+  .querySelector('.start button')
+  .addEventListener('click', () => show('rounds'));
