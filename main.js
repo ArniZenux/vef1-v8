@@ -1,4 +1,4 @@
-import { show, hiddenAll, updateResultScreen, notshow, newGame } from './lib/ui.js';
+import { show, hiddenAll, updateResultScreen, notshow_nextLeikur, show_nextLeikur, notshow_nextRound, show_nextRound } from './lib/ui.js';
 import { isValidBestOf, checkGame, computerPlay, playAsText } from './lib/rock-paper-scissors.js';
 
 // 
@@ -6,7 +6,7 @@ import { isValidBestOf, checkGame, computerPlay, playAsText } from './lib/rock-p
 //
 let totalRounds;
 let currentRound = 0; 
-let counter = 0 ; 
+let counter = 0; 
 let playerWins = 0;
 let computerWins = 0;
 let player_pickup = 0; 
@@ -15,23 +15,11 @@ let best_Of_winner = false;
 let totalWins = 0;
 let losssssser = 0; 
 
-/**
- * Utanumhald um alla spilaða leiki, hver leikur er geymdur á forminu:
- *
- * ```
- * {
- *   player: 2,
- *   computer: 1,
- *   win: true,
- * }
- * 
- */
-const games = [
-  {
-    playerWins: 2,
-    computerWins: 3,
-  }
-];
+//
+// Upplýsingar um stöðu leikja. Náði ekki að klára þetta almennt. Little time left.. 
+//
+let games = [];
+
 
 function checkWinner(player, computer){
   if(player > computer){
@@ -47,12 +35,6 @@ function checkWinner(player, computer){
 //
 function playRound(player) {
   
-  currentRound++;
-
-  if( currentRound == totalRounds ){
-    console.log("Game Over");
-  }
-  else{
     let computer = computerPlay();   // rock-paper-scissor.js  - Find random for computer
     let winner;
 
@@ -83,7 +65,7 @@ function playRound(player) {
       currentRound = totalRounds; 
       console.log("Best of round!!");
     }
-
+    
     updateResultScreen({
       player: player.toString(),
       computer: computer.toString(),
@@ -93,7 +75,6 @@ function playRound(player) {
       playerWins: playerWins,
       computerWins: computerWins,
     });
-  }
 }
 
 //
@@ -117,7 +98,6 @@ document
     totalRounds = 3; 
     console.log(totalRounds);
     show('play');
-
 });
 
 document
@@ -156,41 +136,61 @@ document
   .querySelector('button.scissor')
   .addEventListener('click', () => {
     player_pickup = 1; 
+    currentRound++;
     playRound(player_pickup); 
-    show('result');
-    notshow();
+    if(currentRound == totalRounds){
+      show('result');
+      notshow_nextRound();
+      show_nextLeikur();
+    }
+    else{
+      show('result');
+      notshow_nextLeikur();
+      show_nextRound(); 
+    }
 });
 
 document
   .querySelector('button.paper')
   .addEventListener('click', () => {
     player_pickup = 2; 
+    currentRound++;
     playRound(player_pickup); 
-    show('result');
-    notshow();
-
+    if(currentRound == totalRounds){
+      show('result');
+      notshow_nextRound();
+      show_nextLeikur();
+    }
+    else{
+      show('result');
+      notshow_nextLeikur();
+      show_nextRound(); 
+    }
 });
 
 document
   .querySelector('button.rock')
   .addEventListener('click', () => {
     player_pickup = 3; 
+    currentRound++;
     playRound(player_pickup); 
-    show('result');
-    notshow();
+    if(currentRound == totalRounds){
+      show('result');
+      notshow_nextRound();
+      show_nextLeikur();
+    }
+    else{
+      show('result');
+      notshow_nextLeikur();
+      show_nextRound(); 
+    }
 });
 
-
 //
-// Button : Næsta  umferð 
+// Button : Næsta umferð 
 //
 function newRound() {
-  if(currentRound <= totalRounds){
-    show('play');
-  }
-  else{
-    newGame();
-  }
+  show('play');
 }
 
 //
@@ -199,6 +199,9 @@ function newRound() {
 function finishGame(){
   
   counter++;
+
+  //litle time left.. ná ekki að klára þetta.
+  games.push('Staðan er : ' + playerWins + ' - ' + computerWins);
 
   best_Of_winner = false; 
 
@@ -219,21 +222,39 @@ function finishGame(){
 
   const statusOfGame = document.querySelector('.result__status');
   statusOfGame.textContent = 'Staðan er : ' + playerWins + ' - ' + computerWins;
+  
+  //
+  // unnið/tapað ásamt ratio. 
+  // 
+  checkWinner(playerWins, computerWins);
 
   const TotalGame = document.querySelector('.games__played');
   TotalGame.textContent = counter; 
-  
-  checkWinner(playerWins, computerWins);
+
   const TotalWinner = document.querySelector('.games__wins');
   TotalWinner.textContent = totalWins;
 
   const TotalLosser = document.querySelector('.games__losses');
   TotalLosser.textContent = losssssser;
  
+  let max_win = (100 * (totalWins/counter)).toFixed(2);  
+  let max_los = (100 * (losssssser/counter)).toFixed(2);
+   
+  const winratio = document.querySelector('.games__winratio');
+  winratio.textContent = max_win;
+
+  const losratio = document.querySelector('.games__lossratio');
+  losratio.textContent = max_los;
+  
+  const Glist = document.querySelector('.games__list');
+  Glist.textContent = games.pop(); //litle time left.. náði ekki að klára þetta
+  
   totalRounds = 0; 
   playerWins = 0; 
   computerWins = 0;
   currentRound = 0; 
+
+  show('rounds');
 
 }
 
