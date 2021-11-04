@@ -1,29 +1,19 @@
-// TODO hér vantar að sækja viðeigandi föll úr öðrum modules
 import { show, hiddenAll, updateResultScreen } from './lib/ui.js';
 import { isValidBestOf, checkGame, computerPlay, playAsText } from './lib/rock-paper-scissors.js';
 
-/** Hámarks fjöldi best-of leikja, ætti að vera jákvæð heiltala stærri en 0 */
-const MAX_BEST_OF = 10;
-
-/** Fjöldi leikja sem á að spila í núverandi umferð */
+// 
+// Globals 
+//
 let totalRounds;
-
-/** Númer umferðar í núverandi umferð */
 let currentRound = 0; 
-
-/** Sigrar spilara í núverandi umferð */
+let counter = 0 ; 
 let playerWins = 0;
-
-/** Töp spilara í núverandi umferð */
 let computerWins = 0;
-
 let player_pickup = 0; 
+let best_Of_winner = false; 
 
-/**
- * Fjöldi sigra spilara í öllum leikjum. Gætum reiknað útfrá `games` en til
- * einföldunar höldum við utan um sérstaklega.
- */
 let totalWins = 0;
+let losssssser = 0; 
 
 /**
  * Utanumhald um alla spilaða leiki, hver leikur er geymdur á forminu:
@@ -36,30 +26,38 @@ let totalWins = 0;
  * }
  * ```
  */
-const games = [];
+const games = [
+  {
+    playerWins: 2,
+    computerWins: 3,
+  }
+];
 
-/**
- * Uppfærir stöðu eftir að spilari hefur spilað.
- * Athugar hvort leik sé lokið, uppfærir stöðu skjá með `updateResultScreen`.
- * Birtir annað hvort `Næsti leikur` takka ef leik er lokið eða `Næsta umferð`
- * ef spila þarf fleiri leiki.
- *
- * @param {number} player Það sem spilari spilaði
- */
+function checkWinner(player, computer){
+  if(player > computer){
+    totalWins++;
+  }
+  else{
+    losssssser++;
+  }
+}
+
+//
+//  Main game - loop 
+//
 function playRound(player) {
-  // Komumst að því hvað tölva spilaði og athugum stöðu leiks
 
   if( currentRound == totalRounds ){
     console.log("Game Over");
   }
   else{
-    let computer = computerPlay(); 
+    let computer = computerPlay();   // rock-paper-scissor.js  - Find random for computer
     let winner;
 
     console.log("player: " , player.toString(), " : ", playAsText(player.toString()) ); 
     console.log("computer: ", computer, " : ", playAsText(computer));
     
-    let result_win = checkGame(player.toString(), computer);
+    let result_win = checkGame(player.toString(), computer); // athuga hvort player or computer wins
     
     if(result_win == 1){
       console.log("winner is player: ", result_win);
@@ -80,8 +78,14 @@ function playRound(player) {
     
     currentRound++; 
     console.log(currentRound);
-  
-    // Uppfærum result glugga áður en við sýnum, hér þarf að importa falli
+   
+    if(isValidBestOf(totalRounds, playerWins))
+    {
+      currentRound = totalRounds; 
+      console.log("Best of round!!");
+    }
+
+
     updateResultScreen({
       player: player.toString(),
       computer: computer.toString(),
@@ -93,32 +97,18 @@ function playRound(player) {
     });
   }
   
-  // Uppfærum teljara ef ekki jafntefli, verðum að gera eftir að við setjum titil
-
-  // Ákveðum hvaða takka skuli sýna
-
-  // Sýnum niðurstöðuskjá
 }
 
-/**
- * Fall sem bregst við því þegar smellt er á takka fyrir fjölda umferða
- * @param {Event} e Upplýsingar um atburð
- */
-function round(e) {
-  // TODO útfæra
-}
-
-//hiddenAll(); 
-
-// Takki sem byrjar leik
+//
+// Button : Byrja leik
+//
 document
   .querySelector('.start button')
-  .addEventListener('click', () => {
-    show('round');
-});
+  .addEventListener('click', () => show('rounds'));
 
-// Búum til takka
-// createButtons(MAX_BEST_OF, round);
+//
+// Button : 1 , 3,  5,  7,  9
+//
 document
   .querySelector('button.one')
   .addEventListener('click',() => {
@@ -163,8 +153,9 @@ document
     console.log(totalRounds);
 });
 
-// Event listeners fyrir skæri, blað, steinn takka
-// TODO
+//
+// Button : skæri, blað, steinn
+//
 document
   .querySelector('button.scissor')
   .addEventListener('click', () => {
@@ -187,26 +178,23 @@ document
     playRound(player_pickup); 
 });
 
-/**
- * Uppfærir stöðu yfir alla spilaða leiki þegar leik lýkur.
- * Gerir tilbúið þannig að hægt sé að spila annan leik í framhaldinu.
- */
-function finishGame() {
-  // Bætum við nýjasta leik
+
+//
+// Button : Næsta  umferð 
+//
+function newRound() {
   console.log("dasfas");
-  // Uppfærum stöðu
-
-  // Bætum leik við lista af spiluðum leikjum
-
-  // Núllstillum breytur
-
-  // Byrjum nýjan leik!
 }
 
-function newRound(){
-  totalRounds = 0; 
-  playerWins = 0; 
-  computerWins = 0;
+//
+// Button : Næsti leikur
+//
+function finishGame(){
+  
+  
+  counter++;
+
+  best_Of_winner = false; 
 
   const resultPlayer = document.querySelector('.result__player');
   resultPlayer.textContent = '----';
@@ -225,6 +213,21 @@ function newRound(){
 
   const statusOfGame = document.querySelector('.result__status');
   statusOfGame.textContent = 'Staðan er : ' + playerWins + ' - ' + computerWins;
+
+  const TotalGame = document.querySelector('.games__played');
+  TotalGame.textContent = counter; 
+  
+  checkWinner(playerWins, computerWins);
+  const TotalWinner = document.querySelector('.games__wins');
+  TotalWinner.textContent = totalWins;
+
+  const TotalLosser = document.querySelector('.games__losses');
+  TotalLosser.textContent = losssssser;
+ 
+  totalRounds = 0; 
+  playerWins = 0; 
+  computerWins = 0;
+  currentRound = 0; 
 
 }
 
